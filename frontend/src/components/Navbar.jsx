@@ -2,7 +2,8 @@ import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
 import { BellIcon, LogOutIcon, ShipWheelIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
-import UseLogout from "../hooks/UseLogout";
+import useLogout from "../hooks/UseLogout";
+
 // import { useMutation, useQueryClient } from "@tanstack/react-query";
 // import { logout } from "../lib/api";
 
@@ -14,7 +15,7 @@ const Navbar = () => {
 
 
  
-   const { logoutMutation } = UseLogout();
+   const { logoutMutation } = useLogout();
 
   return (
     <nav className="bg-base-200 border-b border-base-300 sticky top-0 z-30 h-16 flex items-center">

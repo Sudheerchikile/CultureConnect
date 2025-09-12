@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import React from 'react'
 import { logout } from '../lib/api';
 
-const UseLogout = () => {
+const useLogout = () => {
     const queryClient = useQueryClient();
 
       const { mutate: logoutMutation } = useMutation({
@@ -14,4 +14,4 @@ const UseLogout = () => {
 
 }
 
-export default UseLogout
+export default useLogout
