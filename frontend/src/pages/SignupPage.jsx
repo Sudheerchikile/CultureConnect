@@ -1,7 +1,8 @@
 import { use, useState } from "react";
 import { ShipWheelIcon } from "lucide-react";
 import { Link } from "react-router";
-import { useSignup } from "../hooks/useSignUp";
+import { useSignUp } from "../hooks/useSignUp";
+
 
 
 
@@ -24,7 +25,7 @@ const SignUpPage = () => {
   // });
 
   // This is how we did it using our custom hook - optimized version
-  const { isPending, error, signupMutation } = useSignup();
+  const { isPending, error, signupMutation } = useSignUp();
 
   const handleSignup = (e) => {
     e.preventDefault();
