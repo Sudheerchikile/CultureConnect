@@ -10,6 +10,7 @@ import { Link } from "react-router";
 import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from "lucide-react";
 
 import { capitialize } from "../lib/utils";
+import { getFallbackAvatar, handleAvatarError } from "../lib/utils";
 
 import FriendCard, { getLanguageFlag } from "../components/FriendCard";
 import NoFriendsFound from "../components/NoFriendsFound";
@@ -109,7 +110,13 @@ const HomePage = () => {
                     <div className="card-body p-5 space-y-4">
                       <div className="flex items-center gap-3">
                         <div className="avatar size-16 rounded-full">
-                          <img src={user.profilePicture} alt={user.fullName} />
+                          <img
+                            src={user.profilePicture || getFallbackAvatar(user.fullName)}
+                            alt={user.fullName}
+                            onError={(e) => handleAvatarError(e, user.fullName)}
+                            loading="lazy"
+                            decoding="async"
+                          />
                         </div>
 
                         <div>

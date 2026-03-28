@@ -8,23 +8,24 @@ import chatRoutes from './routes/chatRoute.js'
 import { connectDB } from "./lib/db.js";
 
 import path from "path"
-
+import { fileURLToPath } from "url"
 
 // import cors from "cors";
 const app = express()
-dotenv.config();
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const envPath = path.resolve(__dirname, "../.env");
+dotenv.config({ path: envPath });
 
 app.use(cors(
   {
-    origin: "http://localhost:5173", // Replace with your frontend URL
+    origin: ["http://localhost:5173", "http://localhost:5174"], // Allow both possible Vite ports
     credentials: true, // Allow cookies to be sent with requests
   }   
 ));
 
 
 const PORT = process.env.PORT || 3000 
-
-const __dirname = path.resolve();
 
 app.use(express.json());
 app.use(cookieParser()); 

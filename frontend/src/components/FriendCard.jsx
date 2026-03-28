@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { LANGUAGE_TO_FLAG } from "../constants";
+import { getFallbackAvatar, handleAvatarError } from "../lib/utils";
 
 const FriendCard = ({ friend }) => {
   return (
@@ -8,7 +9,14 @@ const FriendCard = ({ friend }) => {
         {/* USER INFO */}
         <div className="flex items-center gap-3 mb-3">
           <div className="avatar size-12">
-            <img src={friend.profilePicture} alt={friend.fullName} />
+            <img
+              src={friend.profilePicture || getFallbackAvatar(friend.fullName)}
+              alt={friend.fullName}
+              onError={(e) => handleAvatarError(e, friend.fullName)}
+              className="rounded-full"
+              loading="lazy"
+              decoding="async"
+            />
           </div>
           <h3 className="font-semibold truncate">{friend.fullName}</h3>
         </div>

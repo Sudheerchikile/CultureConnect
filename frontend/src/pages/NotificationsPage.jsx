@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { acceptFriendRequest, getFriendRequests } from "../lib/api";
+import toast from "react-hot-toast";
+import { acceptFriendRequest, getFriendRequests, clearAcceptedRequest, clearAllAcceptedRequests } from "../lib/api";
 import { BellIcon, ClockIcon, MessageSquareIcon, UserCheckIcon } from "lucide-react";
 import NoNotifications from "../components/NoNotifications";
+import { getFallbackAvatar, handleAvatarError } from "../lib/utils";
 
 
 const NotificationsPage = () => {
@@ -12,11 +14,31 @@ const NotificationsPage = () => {
     queryFn: getFriendRequests,
   });
 
-  const { mutate: acceptRequestMutation, isPending } = useMutation({
+  const { mutate: acceptRequestMutation, isPending: isAccepting } = useMutation({
     mutationFn: acceptFriendRequest,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-      queryClient.invalidateQueries({ queryKey: ["friends"]});
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
+      toast.success("Friend request accepted");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to accept friend request");
+    },
+  });
+
+  const { mutate: clearAcceptedMutation, isPending: isClearingOne } = useMutation({
+    mutationFn: clearAcceptedRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
+    },
+  });
+
+  const { mutate: clearAllAcceptedMutation, isPending: isClearingAll } = useMutation({
+    mutationFn: clearAllAcceptedRequests,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["friends"] });
     },
   });
 
@@ -52,7 +74,13 @@ const NotificationsPage = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="avatar w-14 h-14 rounded-full bg-base-300">
-                              <img src={request.sender.profilePicture} alt={request.sender.fullName} />
+                              <img
+                                src={request.sender.profilePicture || getFallbackAvatar(request.sender.fullName)}
+                                alt={request.sender.fullName}
+                                onError={(e) => handleAvatarError(e, request.sender.fullName)}
+                                loading="lazy"
+                                decoding="async"
+                              />
                             </div>
                             <div>
                               <h3 className="font-semibold">{request.sender.fullName}</h3>
@@ -67,13 +95,15 @@ const NotificationsPage = () => {
                             </div>
                           </div>
 
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => acceptRequestMutation(request._id)}
-                            disabled={isPending}
-                          >
-                            Accept
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              className="btn btn-primary btn-sm"
+                              onClick={() => acceptRequestMutation(request._id)}
+                              disabled={isAccepting}
+                            >
+                              Accept
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -85,10 +115,19 @@ const NotificationsPage = () => {
             {/* ACCEPTED REQS NOTIFICATONS */}
             {acceptedRequests.length > 0 && (
               <section className="space-y-4">
-                <h2 className="text-xl font-semibold flex items-center gap-2">
-                  <BellIcon className="h-5 w-5 text-success" />
-                  New Connections
-                </h2>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
+                    <BellIcon className="h-5 w-5 text-success" />
+                    New Connections
+                  </h2>
+                  <button
+                    className="btn btn-outline btn-sm"
+                    onClick={() => clearAllAcceptedMutation()}
+                    disabled={isClearingAll}
+                  >
+                    Clear All
+                  </button>
+                </div>
 
                 <div className="space-y-3">
                 {acceptedRequests.map((notification) => (
@@ -96,7 +135,13 @@ const NotificationsPage = () => {
     <div className="card-body p-4">
       <div className="flex items-start gap-3">
         <div className="avatar mt-1 size-10 rounded-full">
-          <img src={notification.user.profilePicture} alt={notification.user.fullName} />
+          <img
+            src={notification.user.profilePicture || getFallbackAvatar(notification.user.fullName)}
+            alt={notification.user.fullName}
+            onError={(e) => handleAvatarError(e, notification.user.fullName)}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
         <div className="flex-1">
           <h3 className="font-semibold">{notification.user.fullName}</h3>
@@ -110,9 +155,18 @@ const NotificationsPage = () => {
             Recently
           </p>
         </div>
-        <div className="badge badge-success">
-          <MessageSquareIcon className="h-3 w-3 mr-1" />
-          New Friend
+        <div className="flex items-center gap-2">
+          <div className="badge badge-success">
+            <MessageSquareIcon className="h-3 w-3 mr-1" />
+            New Friend
+          </div>
+          <button
+            className="btn btn-outline btn-xs"
+            onClick={() => clearAcceptedMutation(notification._id)}
+            disabled={isClearingOne}
+          >
+            Clear
+          </button>
         </div>
       </div>
     </div>

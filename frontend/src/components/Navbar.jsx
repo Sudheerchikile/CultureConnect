@@ -3,6 +3,7 @@ import useAuthUser from "../hooks/useAuthUser";
 import { BellIcon, LogOutIcon, ShipWheelIcon } from "lucide-react";
 import ThemeSelector from "./ThemeSelector";
 import useLogout from "../hooks/UseLogout";
+import { getFallbackAvatar, handleAvatarError } from "../lib/utils";
 
 // import { useMutation, useQueryClient } from "@tanstack/react-query";
 // import { logout } from "../lib/api";
@@ -46,7 +47,14 @@ const Navbar = () => {
 
           <div className="avatar">
             <div className="w-9 m-2 rounded-full">
-              <img src={authUser?.profilePicture} alt="User Avatar" rel="noreferrer" />
+              <img
+                src={authUser?.profilePicture || getFallbackAvatar(authUser?.fullName)}
+                alt="User Avatar"
+                onError={(e) => handleAvatarError(e, authUser?.fullName)}
+                loading="lazy"
+                decoding="async"
+                rel="noreferrer"
+              />
             </div>
           </div>
 

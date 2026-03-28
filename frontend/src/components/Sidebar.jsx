@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router";
 import useAuthUser from "../hooks/useAuthUser";
 import { BellIcon, HomeIcon, ShipWheelIcon, UsersIcon } from "lucide-react";
+import { getFallbackAvatar, handleAvatarError } from "../lib/utils";
 
 const Sidebar = () => {
   const { authUser } = useAuthUser();
@@ -55,7 +56,13 @@ const Sidebar = () => {
         <div className="flex items-center gap-3">
           <div className="avatar">
             <div className="w-10 rounded-full">
-              <img src={authUser?.profilePicture} alt="User Avatar" />
+              <img
+                src={authUser?.profilePicture || getFallbackAvatar(authUser?.fullName)}
+                alt="User Avatar"
+                onError={(e) => handleAvatarError(e, authUser?.fullName)}
+                loading="lazy"
+                decoding="async"
+              />
             </div>
           </div>
           <div className="flex-1">

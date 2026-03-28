@@ -48,9 +48,23 @@ export async function getRecommendedUsers(){
 
 export async function getOutgoingFriendReqs(){
   const response= await axiosInstance.get("/users/outgoing-requests");
-  return response.data
+  return response.data;
 }
 
+export async function declineFriendRequest(requestId){
+  const response = await axiosInstance.put(`/users/friend-request/${requestId}/decline`);
+  return response.data;
+}
+
+export async function clearAcceptedRequest(requestId){
+  const response = await axiosInstance.delete(`/users/accepted-requests/${requestId}`);
+  return response.data;
+}
+
+export async function clearAllAcceptedRequests(){
+  const response = await axiosInstance.delete(`/users/accepted-requests`);
+  return response.data;
+}
 
 export async function sendFriendRequest(userId){
   const response= await axiosInstance.post(`/users/friend-request/${userId}`);
